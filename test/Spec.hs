@@ -11,7 +11,8 @@ main = do
     showPTmAbsTest,
     parsePTmAbsTest,
     showPTmAppTest,
-    parsePTmAppTest
+    parsePTmAppTest,
+    showTermsTest
     ]
   return ()
 
@@ -50,10 +51,18 @@ showPTmAppTest = TestList [
 
 parsePTmAppTest :: Test
 parsePTmAppTest = TestList [
-  "Test 1" ~: (readExpr "(x y)") ~?= 
+  "Test 1:" ~: (readExpr "(x y)") ~?= 
      (PTmApp (PTmVar "x") (PTmVar "y")),
-  "Test 2" ~: (readExpr "(λx.x y)") ~?= 
+  "Test 2:" ~: (readExpr "(λx.x y)") ~?= 
      (PTmApp (PTmAbs "x" $ PTmVar "x") (PTmVar "y")),
-  "Test 3" ~: (readExpr "(λx.x λz.y)") ~?= 
+  "Test 3:" ~: (readExpr "(λx.x λz.y)") ~?= 
      (PTmApp (PTmAbs "x" $ PTmVar "x") (PTmAbs "z" $ PTmVar "y"))
+  ]
+
+showTermsTest :: Test
+showTermsTest = TestList [
+  "Test 1:" ~: (show $ TmVar 1) ~?= "1",
+  "Test 2:" ~: (show $ TmAbs $ TmVar 1) ~?= "λ.1",
+  "Test 3:" ~: (show $ TmApp (TmAbs $ TmVar 0) (TmAbs $ TmAbs $ TmApp (TmVar 0) (TmVar 1)))  ~?= 
+     "(λ.0 λ.λ.(0 1))"
   ]
