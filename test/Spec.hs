@@ -10,7 +10,8 @@ main = do
     parseTmVarTest,
     showTmAbsTest,
     parseTmAbsTest,
-    showTmAppTest
+    showTmAppTest,
+    parseTmAppTest
     ]
   return ()
 
@@ -45,4 +46,11 @@ showTmAppTest :: Test
 showTmAppTest = TestList [
   "Test 1:" ~: (show $ TmApp (TmVar "x") (TmVar "y")) ~?= "(x y)",
   "Test 2:" ~: (show $ TmApp (TmAbs "x" (TmVar "x")) (TmVar "y")) ~?= "(λx.x y)"
+  ]
+
+parseTmAppTest :: Test
+parseTmAppTest = TestList [
+  "Test 1" ~: (readExpr "(x y)") ~?= (TmApp (TmVar "x") (TmVar "y")),
+  "Test 2" ~: (readExpr "(λx.x y)") ~?= (TmApp (TmAbs "x" $ TmVar "x") (TmVar "y")),
+  "Test 3" ~: (readExpr "(λx.x λz.y)") ~?= (TmApp (TmAbs "x" $ TmVar "x") (TmAbs "z" $ TmVar "y"))
   ]
