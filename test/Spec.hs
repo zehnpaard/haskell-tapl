@@ -2,55 +2,84 @@ import Test.HUnit
 
 import Types
 import Parser
+import DeBruijn
 
 main :: IO ()
 main = do
   runTestTT $ TestList [
-    showTmVarTest, 
-    parseTmVarTest,
-    showTmAbsTest,
-    parseTmAbsTest,
-    showTmAppTest,
-    parseTmAppTest
+    showPTmVarTest, 
+    parsePTmVarTest,
+    showPTmAbsTest,
+    parsePTmAbsTest,
+    showPTmAppTest,
+    parsePTmAppTest,
+    showTermsTest,
+    convertTermsTest
     ]
   return ()
 
-showTmVarTest :: Test
-showTmVarTest = TestList [
-  "Test 1:" ~: (show $ TmVar "test") ~?= "test",
-  "Test 2:" ~: (show $ TmVar "a") ~?= "a",
-  "Test 3:" ~: (show $ TmVar "") ~?= ""
+showPTmVarTest :: Test
+showPTmVarTest = TestList [
+  "Test 1:" ~: (show $ PTmVar "test") ~?= "test",
+  "Test 2:" ~: (show $ PTmVar "a") ~?= "a",
+  "Test 3:" ~: (show $ PTmVar "") ~?= ""
   ]
 
-parseTmVarTest :: Test
-parseTmVarTest = TestList [
-  "Test 1:" ~: (readExpr "x") ~?= (TmVar "x"),
-  "Test 2:" ~: (readExpr "abc") ~?= (TmVar "abc"),
-  "Test 3:" ~: (readExpr "z1") ~?= (TmVar "z1")
+parsePTmVarTest :: Test
+parsePTmVarTest = TestList [
+  "Test 1:" ~: (readExpr "x") ~?= (PTmVar "x"),
+  "Test 2:" ~: (readExpr "abc") ~?= (PTmVar "abc"),
+  "Test 3:" ~: (readExpr "z1") ~?= (PTmVar "z1")
   ]
 
-showTmAbsTest :: Test
-showTmAbsTest = TestList [
-  "Test 1:" ~: (show $ TmAbs "x" $ TmVar "x") ~?= "λx.x",
-  "Test 2:" ~: (show $ TmAbs "x" $ TmVar "y") ~?= "λx.y",
-  "Test 3:" ~: (show $ TmAbs "x" $ TmAbs "y" $ TmVar "z") ~?= "λx.λy.z"
+showPTmAbsTest :: Test
+showPTmAbsTest = TestList [
+  "Test 1:" ~: (show $ PTmAbs "x" $ PTmVar "x") ~?= "λx.x",
+  "Test 2:" ~: (show $ PTmAbs "x" $ PTmVar "y") ~?= "λx.y",
+  "Test 3:" ~: (show $ PTmAbs "x" $ PTmAbs "y" $ PTmVar "z") ~?= "λx.λy.z"
   ]
 
-parseTmAbsTest :: Test
-parseTmAbsTest = TestList [
-  "Test 1:" ~: (readExpr "λx.x") ~?= (TmAbs "x" $ TmVar "x"),
-  "Test 2:" ~: (readExpr "λx.λy.x") ~?= (TmAbs "x" $ TmAbs "y" $ TmVar "x")
+parsePTmAbsTest :: Test
+parsePTmAbsTest = TestList [
+  "Test 1:" ~: (readExpr "λx.x") ~?= (PTmAbs "x" $ PTmVar "x"),
+  "Test 2:" ~: (readExpr "λx.λy.x") ~?= (PTmAbs "x" $ PTmAbs "y" $ PTmVar "x")
   ]
 
-showTmAppTest :: Test
-showTmAppTest = TestList [
-  "Test 1:" ~: (show $ TmApp (TmVar "x") (TmVar "y")) ~?= "(x y)",
-  "Test 2:" ~: (show $ TmApp (TmAbs "x" (TmVar "x")) (TmVar "y")) ~?= "(λx.x y)"
+showPTmAppTest :: Test
+showPTmAppTest = TestList [
+  "Test 1:" ~: (show $ PTmApp (PTmVar "x") (PTmVar "y")) ~?= "(x y)",
+  "Test 2:" ~: (show $ PTmApp (PTmAbs "x" (PTmVar "x")) (PTmVar "y")) ~?= "(λx.x y)"
   ]
 
-parseTmAppTest :: Test
-parseTmAppTest = TestList [
-  "Test 1" ~: (readExpr "(x y)") ~?= (TmApp (TmVar "x") (TmVar "y")),
-  "Test 2" ~: (readExpr "(λx.x y)") ~?= (TmApp (TmAbs "x" $ TmVar "x") (TmVar "y")),
-  "Test 3" ~: (readExpr "(λx.x λz.y)") ~?= (TmApp (TmAbs "x" $ TmVar "x") (TmAbs "z" $ TmVar "y"))
+parsePTmAppTest :: Test
+parsePTmAppTest = TestList [
+  "Test 1:" ~: (readExpr "(x y)") ~?= 
+     (PTmApp (PTmVar "x") (PTmVar "y")),
+  "Test 2:" ~: (readExpr "(λx.x y)") ~?= 
+     (PTmApp (PTmAbs "x" $ PTmVar "x") (PTmVar "y")),
+  "Test 3:" ~: (readExpr "(λx.x λz.y)") ~?= 
+     (PTmApp (PTmAbs "x" $ PTmVar "x") (PTmAbs "z" $ PTmVar "y"))
+  ]
+
+showTermsTest :: Test
+showTermsTest = TestList [
+  "Test 1:" ~: (show $ TmVar 1) ~?= "1",
+  "Test 2:" ~: (show $ TmAbs $ TmVar 1) ~?= "λ.1",
+  "Test 3:" ~: (show $ TmApp (TmAbs $ TmVar 0) (TmAbs $ TmAbs $ TmApp (TmVar 0) (TmVar 1)))  ~?= 
+     "(λ.0 λ.λ.(0 1))"
+  ]
+
+convertTermsTest :: Test
+convertTermsTest = TestList [
+  "Test 1:" ~: (convertTerm [] (PTmVar "x")) ~?= (TmVar (-1)),
+  "Test 2:" ~: (convertTerm [] (PTmAbs "x" $ PTmVar "x")) ~?= (TmAbs $ TmVar 0),
+  "Test 3:" ~: (convertTerm [] (PTmAbs "x" $ PTmVar "y")) ~?= (TmAbs $ TmVar (-1)),
+  "Test 4:" ~: (convertTerm [] (PTmAbs "x" $ PTmAbs "y" $ PTmVar "y")) ~?= (TmAbs $ TmAbs $ TmVar 0),
+  "Test 5:" ~: (convertTerm [] (PTmAbs "x" $ PTmAbs "y" $ PTmVar "x")) ~?= (TmAbs $ TmAbs $ TmVar 1),
+  "Test 6:" ~: (convertTerm [] (PTmAbs "y" $ PTmAbs "x" $ PTmVar "y")) ~?= (TmAbs $ TmAbs $ TmVar 1),
+  "Test 7:" ~: (convertTerm [] (PTmApp (PTmVar "x") (PTmVar "y"))) ~?= (TmApp (TmVar (-1)) (TmVar (-1))),
+  "Test 8:" ~: (convertTerm [] (PTmApp (PTmAbs "x" $ PTmVar "x") (PTmAbs "x" $ PTmAbs "y" $ PTmVar "x"))) ~?=
+    (TmApp (TmAbs $ TmVar 0) (TmAbs $ TmAbs $ TmVar 1)),
+  "Test 9:" ~: (convertTerm [] (PTmApp (PTmAbs "x" $ PTmVar "x") (PTmAbs "y" $ PTmVar "x"))) ~?=
+    (TmApp (TmAbs $ TmVar 0) (TmAbs $ TmVar (-1)))
   ]
