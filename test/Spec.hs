@@ -8,7 +8,8 @@ main = do
   runTestTT $ TestList [
     showTmVarTest, 
     parseTmVarTest,
-    showTmAbsTest
+    showTmAbsTest,
+    parseTmAbsTest
     ]
   return ()
 
@@ -31,4 +32,10 @@ showTmAbsTest = TestList [
   "Test 1:" ~: (show $ TmAbs "x" $ TmVar "x") ~?= "λx.x",
   "Test 2:" ~: (show $ TmAbs "x" $ TmVar "y") ~?= "λx.y",
   "Test 3:" ~: (show $ TmAbs "x" $ TmAbs "y" $ TmVar "z") ~?= "λx.λy.z"
+  ]
+
+parseTmAbsTest :: Test
+parseTmAbsTest = TestList [
+  "Test 1:" ~: (readExpr "λx.x") ~?= (TmAbs "x" $ TmVar "x"),
+  "Test 1:" ~: (readExpr "λx.λy.x") ~?= (TmAbs "x" $ TmAbs "y" $ TmVar "x")
   ]
