@@ -10,7 +10,13 @@ readExpr input = case parse parseExpr "lambda" input of
   Right t  -> t
 
 parseExpr :: Parser Term
-parseExpr = parseVar
+parseExpr = parseAbs <|> parseVar
 
 parseVar :: Parser Term
-parseVar = fmap TmVar $ (:) <$> letter <*> many alphaNum
+parseVar = TmVar <$> parseVarString
+
+parseAbs :: Parser Term
+parseAbs = TmAbs <$ char 'λ' <*> parseVarString <* char '.' <*> parseExpr
+
+parseVarString :: Parser String
+parseVarString = (:) <$> letter <*> many alphaNum
