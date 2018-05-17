@@ -3,6 +3,7 @@ import Test.HUnit
 import Types
 import Parser
 import DeBruijn
+import Evaluate
 
 main :: IO ()
 main = do
@@ -14,7 +15,8 @@ main = do
     showPTmAppTest,
     parsePTmAppTest,
     showTermsTest,
-    convertTermsTest
+    convertTermsTest,
+    evalTest
     ]
   return ()
 
@@ -82,4 +84,18 @@ convertTermsTest = TestList [
     (TmApp (TmAbs $ TmVar 0) (TmAbs $ TmAbs $ TmVar 1)),
   "Test 9:" ~: (convertTerm [] (PTmApp (PTmAbs "x" $ PTmVar "x") (PTmAbs "y" $ PTmVar "x"))) ~?=
     (TmApp (TmAbs $ TmVar 0) (TmAbs $ TmVar (-1)))
+  ]
+
+evalTest :: Test
+evalTest = TestList [
+  "Test 1:" ~: (substitute (TmVar 1) (TmVar 0)) ~?= (TmVar 1),
+  "Test 2:" ~: (substitute (TmVar 1) (TmAbs $ TmVar 0)) ~?= (TmAbs $ TmVar 0),
+  "Test 3:" ~: (substitute (TmVar 3) (TmAbs $ TmVar 1)) ~?= (TmAbs $ TmVar 3),
+  "Test 4:" ~: (eval (TmAbs $ TmVar 1)) ~?= [(TmAbs $ TmVar 1)],
+  "Test 5:" ~: (eval (TmApp (TmAbs $ TmAbs $ TmVar 1) (TmAbs $ TmVar 0))) ~?= 
+     [(TmApp (TmAbs $ TmAbs $ TmVar 1) (TmAbs $ TmVar 0)),
+      (TmAbs $ TmAbs $ TmVar 0)],
+  "Test 6:" ~: (eval (TmApp (TmAbs $ TmVar 0) (TmAbs $ TmAbs $ TmVar 1))) ~?= 
+     [(TmApp (TmAbs $ TmVar 0) (TmAbs $ TmAbs $ TmVar 1)),
+      (TmAbs $ TmAbs $ TmVar 1)]
   ]
