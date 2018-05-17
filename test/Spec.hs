@@ -6,51 +6,54 @@ import Parser
 main :: IO ()
 main = do
   runTestTT $ TestList [
-    showTmVarTest, 
-    parseTmVarTest,
-    showTmAbsTest,
-    parseTmAbsTest,
-    showTmAppTest,
-    parseTmAppTest
+    showPTmVarTest, 
+    parsePTmVarTest,
+    showPTmAbsTest,
+    parsePTmAbsTest,
+    showPTmAppTest,
+    parsePTmAppTest
     ]
   return ()
 
-showTmVarTest :: Test
-showTmVarTest = TestList [
-  "Test 1:" ~: (show $ TmVar "test") ~?= "test",
-  "Test 2:" ~: (show $ TmVar "a") ~?= "a",
-  "Test 3:" ~: (show $ TmVar "") ~?= ""
+showPTmVarTest :: Test
+showPTmVarTest = TestList [
+  "Test 1:" ~: (show $ PTmVar "test") ~?= "test",
+  "Test 2:" ~: (show $ PTmVar "a") ~?= "a",
+  "Test 3:" ~: (show $ PTmVar "") ~?= ""
   ]
 
-parseTmVarTest :: Test
-parseTmVarTest = TestList [
-  "Test 1:" ~: (readExpr "x") ~?= (TmVar "x"),
-  "Test 2:" ~: (readExpr "abc") ~?= (TmVar "abc"),
-  "Test 3:" ~: (readExpr "z1") ~?= (TmVar "z1")
+parsePTmVarTest :: Test
+parsePTmVarTest = TestList [
+  "Test 1:" ~: (readExpr "x") ~?= (PTmVar "x"),
+  "Test 2:" ~: (readExpr "abc") ~?= (PTmVar "abc"),
+  "Test 3:" ~: (readExpr "z1") ~?= (PTmVar "z1")
   ]
 
-showTmAbsTest :: Test
-showTmAbsTest = TestList [
-  "Test 1:" ~: (show $ TmAbs "x" $ TmVar "x") ~?= "λx.x",
-  "Test 2:" ~: (show $ TmAbs "x" $ TmVar "y") ~?= "λx.y",
-  "Test 3:" ~: (show $ TmAbs "x" $ TmAbs "y" $ TmVar "z") ~?= "λx.λy.z"
+showPTmAbsTest :: Test
+showPTmAbsTest = TestList [
+  "Test 1:" ~: (show $ PTmAbs "x" $ PTmVar "x") ~?= "λx.x",
+  "Test 2:" ~: (show $ PTmAbs "x" $ PTmVar "y") ~?= "λx.y",
+  "Test 3:" ~: (show $ PTmAbs "x" $ PTmAbs "y" $ PTmVar "z") ~?= "λx.λy.z"
   ]
 
-parseTmAbsTest :: Test
-parseTmAbsTest = TestList [
-  "Test 1:" ~: (readExpr "λx.x") ~?= (TmAbs "x" $ TmVar "x"),
-  "Test 2:" ~: (readExpr "λx.λy.x") ~?= (TmAbs "x" $ TmAbs "y" $ TmVar "x")
+parsePTmAbsTest :: Test
+parsePTmAbsTest = TestList [
+  "Test 1:" ~: (readExpr "λx.x") ~?= (PTmAbs "x" $ PTmVar "x"),
+  "Test 2:" ~: (readExpr "λx.λy.x") ~?= (PTmAbs "x" $ PTmAbs "y" $ PTmVar "x")
   ]
 
-showTmAppTest :: Test
-showTmAppTest = TestList [
-  "Test 1:" ~: (show $ TmApp (TmVar "x") (TmVar "y")) ~?= "(x y)",
-  "Test 2:" ~: (show $ TmApp (TmAbs "x" (TmVar "x")) (TmVar "y")) ~?= "(λx.x y)"
+showPTmAppTest :: Test
+showPTmAppTest = TestList [
+  "Test 1:" ~: (show $ PTmApp (PTmVar "x") (PTmVar "y")) ~?= "(x y)",
+  "Test 2:" ~: (show $ PTmApp (PTmAbs "x" (PTmVar "x")) (PTmVar "y")) ~?= "(λx.x y)"
   ]
 
-parseTmAppTest :: Test
-parseTmAppTest = TestList [
-  "Test 1" ~: (readExpr "(x y)") ~?= (TmApp (TmVar "x") (TmVar "y")),
-  "Test 2" ~: (readExpr "(λx.x y)") ~?= (TmApp (TmAbs "x" $ TmVar "x") (TmVar "y")),
-  "Test 3" ~: (readExpr "(λx.x λz.y)") ~?= (TmApp (TmAbs "x" $ TmVar "x") (TmAbs "z" $ TmVar "y"))
+parsePTmAppTest :: Test
+parsePTmAppTest = TestList [
+  "Test 1" ~: (readExpr "(x y)") ~?= 
+     (PTmApp (PTmVar "x") (PTmVar "y")),
+  "Test 2" ~: (readExpr "(λx.x y)") ~?= 
+     (PTmApp (PTmAbs "x" $ PTmVar "x") (PTmVar "y")),
+  "Test 3" ~: (readExpr "(λx.x λz.y)") ~?= 
+     (PTmApp (PTmAbs "x" $ PTmVar "x") (PTmAbs "z" $ PTmVar "y"))
   ]
