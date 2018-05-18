@@ -9,7 +9,8 @@ showPTermsTest = TestList [
     showPTmVarTest, 
     showPTmAbsTest,
     showPTmAppTest,
-    showPTmTrueFalseTest
+    showPTmTrueFalseTest,
+    showPTmIfTest
   ]
 
 showPTmVarTest :: Test
@@ -40,3 +41,9 @@ showPTmTrueFalseTest = TestList [
   "Test 4:" ~: (show $ PTmApp PTmFalse PTmTrue) ~?= "(false true)"
   ]
 
+showPTmIfTest :: Test
+showPTmIfTest = TestList [
+  "Test 1:" ~: (show $ PTmIf PTmTrue PTmFalse PTmTrue) ~?= "(if true then false else true)",
+  "Test 2:" ~: (show $ PTmIf (PTmVar "x") PTmFalse (PTmAbs "x" PTmFalse)) ~?= 
+    "(if x then false else λx.false)"
+  ]

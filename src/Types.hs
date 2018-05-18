@@ -7,14 +7,16 @@ data PTerm = PTmVar String
            | PTmApp PTerm PTerm
            | PTmTrue
            | PTmFalse
+           | PTmIf PTerm PTerm PTerm
   deriving Eq
 
 instance Show PTerm where show = showPTerm
-showPTerm (PTmVar s)     = s
-showPTerm (PTmAbs s t)   = printf "λ%s.%s" s $ show t
-showPTerm (PTmApp t1 t2) = printf "(%s %s)" (show t1) (show t2)
-showPTerm PTmTrue        = "true"
-showPTerm PTmFalse       = "false"
+showPTerm (PTmVar s)       = s
+showPTerm (PTmAbs s t)     = printf "λ%s.%s" s $ show t
+showPTerm (PTmApp t1 t2)   = printf "(%s %s)" (show t1) (show t2)
+showPTerm PTmTrue          = "true"
+showPTerm PTmFalse         = "false"
+showPTerm (PTmIf t1 t2 t3) = printf "(if %s then %s else %s)" (show t1) (show t2) (show t3)
 
 data Term = TmVar Int
           | TmAbs Term
