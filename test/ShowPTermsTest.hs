@@ -8,7 +8,8 @@ showPTermsTest :: Test
 showPTermsTest = TestList [
     showPTmVarTest, 
     showPTmAbsTest,
-    showPTmAppTest
+    showPTmAppTest,
+    showPTmTrueFalseTest
   ]
 
 showPTmVarTest :: Test
@@ -31,5 +32,11 @@ showPTmAppTest = TestList [
   "Test 2:" ~: (show $ PTmApp (PTmAbs "x" (PTmVar "x")) (PTmVar "y")) ~?= "(λx.x y)"
   ]
 
-
+showPTmTrueFalseTest :: Test
+showPTmTrueFalseTest = TestList [
+  "Test 1:" ~: (show PTmTrue) ~?= "true",
+  "Test 2:" ~: (show PTmFalse) ~?= "false",
+  "Test 3:" ~: (show $ PTmAbs "x" PTmTrue) ~?= "λx.true",
+  "Test 4:" ~: (show $ PTmApp PTmFalse PTmTrue) ~?= "(false true)"
+  ]
 
