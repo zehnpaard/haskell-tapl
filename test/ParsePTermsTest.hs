@@ -9,7 +9,8 @@ parsePTermsTest :: Test
 parsePTermsTest = TestList [
     parsePTmVarTest,
     parsePTmAbsTest,
-    parsePTmAppTest
+    parsePTmAppTest,
+    parsePTmTrueFalseTest
   ]
 
 parsePTmVarTest :: Test
@@ -35,4 +36,12 @@ parsePTmAppTest = TestList [
      (PTmApp (PTmAbs "x" $ PTmVar "x") (PTmAbs "z" $ PTmVar "y"))
   ]
 
-
+parsePTmTrueFalseTest :: Test
+parsePTmTrueFalseTest = TestList [
+  "Test 1:" ~: (readExpr "true") ~?= PTmTrue,
+  "Test 2:" ~: (readExpr "false") ~?= PTmFalse,
+  "Test 3:" ~: (readExpr "λx.true") ~?= (PTmAbs "x" PTmTrue),
+  "Test 4:" ~: (readExpr "(false true)") ~?= (PTmApp PTmFalse PTmTrue),
+  "Test 5:" ~: (readExpr "λt.true") ~?= (PTmAbs "t" PTmTrue),
+  "Test 6:" ~: (readExpr "λfalsex.false") ~?= (PTmAbs "falsex" PTmFalse)
+  ]
