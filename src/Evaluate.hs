@@ -7,6 +7,8 @@ walk varFn absDepth term
   | (TmVar _) <- term     = varFn absDepth term
   | (TmAbs t) <- term     = TmAbs $ walk varFn (absDepth + 1) t
   | (TmApp t1 t2) <- term = TmApp (walk varFn absDepth t1) (walk varFn absDepth t2)
+  | TmTrue <- term        = TmTrue
+  | TmFalse <- term       = TmFalse
 
 substitute :: Term -> Term -> Term
 substitute innerTerm outerTerm = walk varFn 0 outerTerm
@@ -14,6 +16,8 @@ substitute innerTerm outerTerm = walk varFn 0 outerTerm
 
 isValue :: Term -> Bool
 isValue (TmAbs _) = True
+isValue TmTrue    = True
+isValue TmFalse   = True
 isValue _         = False
 
 eval1 :: Term -> Term
