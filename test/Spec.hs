@@ -24,7 +24,9 @@ showTermsTest = TestList [
   "Test 1:" ~: (show $ TmVar 1) ~?= "1",
   "Test 2:" ~: (show $ TmAbs $ TmVar 1) ~?= "λ.1",
   "Test 3:" ~: (show $ TmApp (TmAbs $ TmVar 0) (TmAbs $ TmAbs $ TmApp (TmVar 0) (TmVar 1)))  ~?= 
-     "(λ.0 λ.λ.(0 1))"
+     "(λ.0 λ.λ.(0 1))",
+  "Test 4:" ~: (show TmTrue) ~?= "true",
+  "Test 5:" ~: (show TmFalse) ~?= "false"
   ]
 
 convertTermsTest :: Test
