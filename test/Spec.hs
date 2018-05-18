@@ -41,7 +41,9 @@ convertTermsTest = TestList [
   "Test 8:" ~: (convertTerm [] (PTmApp (PTmAbs "x" $ PTmVar "x") (PTmAbs "x" $ PTmAbs "y" $ PTmVar "x"))) ~?=
     (TmApp (TmAbs $ TmVar 0) (TmAbs $ TmAbs $ TmVar 1)),
   "Test 9:" ~: (convertTerm [] (PTmApp (PTmAbs "x" $ PTmVar "x") (PTmAbs "y" $ PTmVar "x"))) ~?=
-    (TmApp (TmAbs $ TmVar 0) (TmAbs $ TmVar (-1)))
+    (TmApp (TmAbs $ TmVar 0) (TmAbs $ TmVar (-1))),
+  "Test 10:" ~: (convertTerm [] PTmTrue) ~?= TmTrue,
+  "Test 11:" ~: (convertTerm [] PTmFalse) ~?= TmFalse
   ]
 
 evalTest :: Test
