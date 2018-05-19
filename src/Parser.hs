@@ -11,21 +11,24 @@ readExpr input = case parse parseExpr "lambda" input of
 
 parseExpr :: Parser PTerm
 parseExpr = parseAbs 
+        <|> try parseIf
         <|> parseApp
         <|> try parseBool
         <|> parseVar
 
-parseVar :: Parser PTerm
-parseVar = PTmVar <$> parseVarString
 
 parseAbs :: Parser PTerm
 parseAbs = PTmAbs <$ char 'λ' <*> parseVarString <* char '.' <*> parseExpr
 
-parseApp :: Parser PTerm
-parseApp = PTmApp <$ char '(' <*> parseExpr <* char ' ' <*> parseExpr <* char ')'
+parseVar :: Parser PTerm
+parseVar = PTmVar <$> parseVarString
 
 parseVarString :: Parser String
 parseVarString = (:) <$> letter <*> many alphaNum
+
+
+parseApp :: Parser PTerm
+parseApp = PTmApp <$ char '(' <*> parseExpr <* char ' ' <*> parseExpr <* char ')'
 
 parseBool :: Parser PTerm
 parseBool = parseTrue <|> parseFalse
@@ -35,3 +38,10 @@ parseTrue = string "true" *> pure PTmTrue
 
 parseFalse :: Parser PTerm
 parseFalse = string "false" *> pure PTmFalse
+
+
+parseIf :: Parser PTerm
+parseIf = PTmIf <$ string "(if " <*> parseExpr 
+                <* string " then " <*> parseExpr
+                <* string " else " <*> parseExpr
+                <* char ')'
