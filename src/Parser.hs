@@ -18,7 +18,7 @@ parseExpr = parseAbs
 
 
 parseAbs :: Parser PTerm
-parseAbs = PTmAbs <$ char 'λ' <*> parseVarString <* char '.' <*> parseExpr
+parseAbs = PTmAbs <$ char 'λ' <*> parseVarString <* char '.' <*> pure TpBool <*> parseExpr
 
 parseVar :: Parser PTerm
 parseVar = PTmVar <$> parseVarString

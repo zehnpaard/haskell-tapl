@@ -3,7 +3,7 @@ module Types where
 import Text.Printf
 
 data PTerm = PTmVar String
-           | PTmAbs String PTerm
+           | PTmAbs String TmType PTerm
            | PTmApp PTerm PTerm
            | PTmTrue
            | PTmFalse
@@ -12,7 +12,7 @@ data PTerm = PTmVar String
 
 instance Show PTerm where show = showPTerm
 showPTerm (PTmVar s)       = s
-showPTerm (PTmAbs s t)     = printf "λ%s.%s" s $ show t
+showPTerm (PTmAbs s tp t)  = printf "λ%s.%s" s $ show t
 showPTerm (PTmApp t1 t2)   = printf "(%s %s)" (show t1) (show t2)
 showPTerm PTmTrue          = "true"
 showPTerm PTmFalse         = "false"

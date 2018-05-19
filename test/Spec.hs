@@ -35,21 +35,22 @@ showTermsTest = TestList [
 convertTermsTest :: Test
 convertTermsTest = TestList [
   "Test 1:" ~: (convertTerm [] (PTmVar "x")) ~?= (TmVar (-1)),
-  "Test 2:" ~: (convertTerm [] (PTmAbs "x" $ PTmVar "x")) ~?= (TmAbs $ TmVar 0),
-  "Test 3:" ~: (convertTerm [] (PTmAbs "x" $ PTmVar "y")) ~?= (TmAbs $ TmVar (-1)),
-  "Test 4:" ~: (convertTerm [] (PTmAbs "x" $ PTmAbs "y" $ PTmVar "y")) ~?= (TmAbs $ TmAbs $ TmVar 0),
-  "Test 5:" ~: (convertTerm [] (PTmAbs "x" $ PTmAbs "y" $ PTmVar "x")) ~?= (TmAbs $ TmAbs $ TmVar 1),
-  "Test 6:" ~: (convertTerm [] (PTmAbs "y" $ PTmAbs "x" $ PTmVar "y")) ~?= (TmAbs $ TmAbs $ TmVar 1),
+  "Test 2:" ~: (convertTerm [] (PTmAbs "x" TpBool $ PTmVar "x")) ~?= (TmAbs $ TmVar 0),
+  "Test 3:" ~: (convertTerm [] (PTmAbs "x" TpBool $ PTmVar "y")) ~?= (TmAbs $ TmVar (-1)),
+  "Test 4:" ~: (convertTerm [] (PTmAbs "x" TpBool $ PTmAbs "y" TpBool $ PTmVar "y")) ~?= 
+     (TmAbs $ TmAbs $ TmVar 0),
+  "Test 5:" ~: (convertTerm [] (PTmAbs "x" TpBool $ PTmAbs "y" TpBool $ PTmVar "x")) ~?= (TmAbs $ TmAbs $ TmVar 1),
+  "Test 6:" ~: (convertTerm [] (PTmAbs "y" TpBool $ PTmAbs "x" TpBool $ PTmVar "y")) ~?= (TmAbs $ TmAbs $ TmVar 1),
   "Test 7:" ~: (convertTerm [] (PTmApp (PTmVar "x") (PTmVar "y"))) ~?= (TmApp (TmVar (-1)) (TmVar (-1))),
-  "Test 8:" ~: (convertTerm [] (PTmApp (PTmAbs "x" $ PTmVar "x") (PTmAbs "x" $ PTmAbs "y" $ PTmVar "x"))) ~?=
+  "Test 8:" ~: (convertTerm [] (PTmApp (PTmAbs "x" TpBool $ PTmVar "x") (PTmAbs "x" TpBool $ PTmAbs "y" TpBool $ PTmVar "x"))) ~?=
     (TmApp (TmAbs $ TmVar 0) (TmAbs $ TmAbs $ TmVar 1)),
-  "Test 9:" ~: (convertTerm [] (PTmApp (PTmAbs "x" $ PTmVar "x") (PTmAbs "y" $ PTmVar "x"))) ~?=
+  "Test 9:" ~: (convertTerm [] (PTmApp (PTmAbs "x" TpBool $ PTmVar "x") (PTmAbs "y" TpBool $ PTmVar "x"))) ~?=
     (TmApp (TmAbs $ TmVar 0) (TmAbs $ TmVar (-1))),
   "Test 10:" ~: (convertTerm [] PTmTrue) ~?= TmTrue,
   "Test 11:" ~: (convertTerm [] PTmFalse) ~?= TmFalse,
   "Test 12:" ~: (convertTerm [] (PTmIf PTmTrue 
                                        PTmFalse 
-                                       (PTmAbs "x" $ PTmAbs "y" $ PTmApp (PTmVar "y") (PTmVar "x")))) ~?=
+                                       (PTmAbs "x" TpBool $ PTmAbs "y" TpBool $ PTmApp (PTmVar "y") (PTmVar "x")))) ~?=
     (TmIf TmTrue TmFalse $ TmAbs $ TmAbs $ TmApp (TmVar 0) (TmVar 1))
   ]
 
