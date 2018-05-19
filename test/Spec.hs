@@ -67,6 +67,11 @@ evalTest = TestList [
   "Test 8:" ~: (eval TmFalse) ~?= [TmFalse],
   "Test 9:" ~: (eval (TmApp (TmAbs $ TmAbs $ TmVar 1) (TmAbs $ TmFalse))) ~?= 
      [(TmApp (TmAbs $ TmAbs $ TmVar 1) (TmAbs $ TmFalse)),
-      (TmAbs $ TmAbs $ TmFalse)]
+      (TmAbs $ TmAbs $ TmFalse)],
+  "Test 10:" ~: (eval (TmIf TmTrue TmFalse TmTrue)) ~?= [(TmIf TmTrue TmFalse TmTrue), TmFalse],
+  "Test 11:" ~: (eval (TmIf (TmApp (TmAbs $ TmVar 0) TmTrue) (TmAbs $ TmVar 0) (TmAbs $ TmFalse))) ~?=
+     [(TmIf (TmApp (TmAbs $ TmVar 0) TmTrue) (TmAbs $ TmVar 0) (TmAbs $ TmFalse)),
+      (TmIf TmTrue (TmAbs $ TmVar 0) (TmAbs $ TmFalse)),
+      (TmAbs $ TmVar 0)]
   ]
 
