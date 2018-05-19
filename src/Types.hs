@@ -19,7 +19,7 @@ showPTerm PTmFalse         = "false"
 showPTerm (PTmIf t1 t2 t3) = printf "(if %s then %s else %s)" (show t1) (show t2) (show t3)
 
 data Term = TmVar Int
-          | TmAbs Term
+          | TmAbs TmType Term
           | TmApp Term Term
           | TmTrue
           | TmFalse
@@ -28,7 +28,7 @@ data Term = TmVar Int
 
 instance Show Term where show = showTerm
 showTerm (TmVar n)       = show n
-showTerm (TmAbs t)       = "λ." ++ show t
+showTerm (TmAbs tp t)    = printf "λ:%s.%s" (show tp) (show t)
 showTerm (TmApp t1 t2)   = printf "(%s %s)" (show t1) (show t2)
 showTerm TmTrue          = "true"
 showTerm TmFalse         = "false"
