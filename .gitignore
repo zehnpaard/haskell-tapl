@@ -1,3 +1,4 @@
 .stack-work/
 haskell-tapl.cabal
 *~
+*.swp
