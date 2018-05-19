@@ -33,3 +33,11 @@ showTerm (TmApp t1 t2)   = printf "(%s %s)" (show t1) (show t2)
 showTerm TmTrue          = "true"
 showTerm TmFalse         = "false"
 showTerm (TmIf t1 t2 t3) = printf "(if %s then %s else %s)" (show t1) (show t2) (show t3)
+
+data TmType = TpBool | TpArrow TmType TmType
+  deriving Eq
+
+instance Show TmType where show = showType
+showType TpBool = "Bool"
+showType (TpArrow TpBool tp2) = "Bool->" ++ (show tp2)
+showType (TpArrow tp1 tp2) = printf "(%s)->%s" (show tp1) (show tp2)
