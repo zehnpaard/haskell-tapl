@@ -23,11 +23,13 @@ data Term = TmVar Int
           | TmApp Term Term
           | TmTrue
           | TmFalse
+          | TmIf Term Term Term
   deriving Eq
 
 instance Show Term where show = showTerm
-showTerm (TmVar n)     = show n
-showTerm (TmAbs t)     = "λ." ++ show t
-showTerm (TmApp t1 t2) = printf "(%s %s)" (show t1) (show t2)
-showTerm TmTrue        = "true"
-showTerm TmFalse       = "false"
+showTerm (TmVar n)       = show n
+showTerm (TmAbs t)       = "λ." ++ show t
+showTerm (TmApp t1 t2)   = printf "(%s %s)" (show t1) (show t2)
+showTerm TmTrue          = "true"
+showTerm TmFalse         = "false"
+showTerm (TmIf t1 t2 t3) = printf "(if %s then %s else %s)" (show t1) (show t2) (show t3)
