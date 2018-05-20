@@ -18,7 +18,9 @@ parseExpr = parseAbs
 
 
 parseAbs :: Parser PTerm
-parseAbs = PTmAbs <$ char 'λ' <*> parseVarString <* char '.' <*> parseExpr
+parseAbs = PTmAbs <$ char 'λ' <*> parseVarString 
+                  <* char ':' <*> parseType
+                  <* char '.' <*> parseExpr
 
 parseVar :: Parser PTerm
 parseVar = PTmVar <$> parseVarString
@@ -45,3 +47,15 @@ parseIf = PTmIf <$ string "(if " <*> parseExpr
                 <* string " then " <*> parseExpr
                 <* string " else " <*> parseExpr
                 <* char ')'
+
+parseType :: Parser TmType
+parseType = try parseTpArrow <|> parseTypex
+
+parseTpArrow :: Parser TmType
+parseTpArrow = TpArrow <$> parseTypex <* string "->" <*> parseType
+
+parseTypex :: Parser TmType
+parseTypex = parseTpBool <|> char '(' *> parseType <* char ')'
+
+parseTpBool :: Parser TmType
+parseTpBool = string "Bool" *> pure TpBool
