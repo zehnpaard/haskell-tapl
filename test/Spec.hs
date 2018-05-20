@@ -3,6 +3,7 @@ import Test.HUnit
 import ShowPTermsTest
 import ParsePTermsTest
 import ShowTmTypesTest
+import TypeCheckTest
 
 import Types
 import Parser
@@ -17,7 +18,8 @@ main = do
     showTermsTest,
     convertTermsTest,
     evalTest,
-    showTmTypesTest
+    showTmTypesTest,
+    typeCheckTest
     ]
   return ()
 
